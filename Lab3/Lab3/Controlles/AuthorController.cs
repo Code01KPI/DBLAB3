@@ -38,8 +38,13 @@ namespace Lab3
 
         public override async Task DeleteDataAsync(int id)
         {
+
             using (schoolContext = new SchoolContext())
             {
+                var aBList = schoolContext.AuthorBooks.ToList().Where(ab => ab.AuthorFk == id);
+                schoolContext.AuthorBooks.RemoveRange(aBList);
+                await schoolContext.SaveChangesAsync();
+
                 schoolContext.Authors.Remove(schoolContext.Authors.First(a => a.AuthorId == id));
                 await schoolContext.SaveChangesAsync();
             }
@@ -50,7 +55,7 @@ namespace Lab3
             Author? a;
             using (schoolContext = new SchoolContext())
             {
-                a = schoolContext.Authors.FirstOrDefault<Author>(a => a.AuthorId == id);
+                a = schoolContext.Authors.FirstOrDefault(a => a.AuthorId == id);
             }
 
             if (a is not null)
