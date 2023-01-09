@@ -1,6 +1,7 @@
-﻿using DBLab2.Models;
-using Npgsql;
+﻿using Lab3;
 
+
+/*
 namespace DBLab2.Controllers
 {
     internal class TableAuthorBookController : DataBaseController
@@ -46,4 +47,4 @@ namespace DBLab2.Controllers
             }
     }
 }
-
+*/

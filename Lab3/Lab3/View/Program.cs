@@ -1,15 +1,7 @@
-﻿using DBLab2.Controllers;
-using DBLab2.Models;
-using Npgsql;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using Lab3;
 
-DataBaseController dbController = new DataBaseController();
-TableAuthorController authorController = new TableAuthorController();
-TableAuthorBookController authorBookController = new TableAuthorBookController();
-TableBookController bookController = new TableBookController();
-TableLibraryController libraryController = new TableLibraryController();
-TableReaderController readerController = new TableReaderController();   
-TablePersonController personController = new TablePersonController();
+AuthorController authorController = new AuthorController();
 
 string? strItem;
 int item;
@@ -20,8 +12,6 @@ try
     while (true)
     {
         Console.WriteLine("1. Work with data");
-        Console.WriteLine("2. Create data");
-        Console.WriteLine("3. Search");
         Console.WriteLine("4. Exit");
         Console.Write("Choose menu item: ");
 
@@ -33,7 +23,7 @@ try
         }
 
         int id;
-        string? full_name, country_of_origin, strId;
+        string full_name, country_of_origin, strId;
 
         int book_fk, author_fk;
         string? strBook_fk, strAuthor_fk;
@@ -73,7 +63,7 @@ try
                         throw new Exception("Invalid menu item!");
                     switch (item1)
                     {
-                        #region Insert data 
+                        #region Insert data
                         case 1:
                             while (true)
                             {
@@ -90,7 +80,7 @@ try
                                                 Console.WriteLine("It's incorrect value of *author_id*!");
                                                 continue;
                                             }
-                                            else if (await dbController.IsPKDublicated(id, "Author", "author_id"))
+                                            else if (await authorController.CheckPKValueAsync(id))
                                             {
                                                 Console.WriteLine("It's incorrect value of *author_id*(Dublicated)!");
                                                 continue;
@@ -112,15 +102,118 @@ try
                                                 continue;
                                             }
 
-                                            authorController.authorList.Add(new TableAuthor(id, full_name, country_of_origin));
+                                            authorController.author = new Author(id, full_name, country_of_origin);
+                                            await authorController.InsertDataAsync();
 
                                             Console.Write("Finish entering data? ");
                                             if (Console.ReadLine()?.ToLower() == "y")
                                                 break;
                                             Console.WriteLine();
                                         }
-                                        await dbController.InsertDataAsync("Author", authorController);
                                         break;
+                                    #endregion
+                                }
+                            }
+                        #region Update data
+                        case 2:
+                            while (true)
+                            {
+                                item11 = ChooseTable();
+                                switch (item11)
+                                {
+                                    case 1:
+                                        while (true)
+                                        {
+                                            Console.Write("Insert id of row for update: ");
+                                            strId = Console.ReadLine();
+                                            if (!int.TryParse(strId, out id))
+                                            {
+                                                Console.WriteLine("It's incorrect value of id!");
+                                                continue;
+                                            }
+                                            else if (!await authorController.CheckPKValueAsync(id))
+                                            {
+                                                Console.WriteLine("Table don't have row with that id!");
+                                                continue;
+                                            }
+
+                                            Console.Write("Insert new *full_name*: ");
+                                            full_name = Console.ReadLine();
+                                            if (string.IsNullOrWhiteSpace(full_name))
+                                            {
+                                                Console.WriteLine("It's incorrect value of *full_name*!");
+                                                continue;
+                                            }
+
+                                            Console.Write("Insert new *country_of_origin*: ");
+                                            country_of_origin = Console.ReadLine();
+                                            if (string.IsNullOrWhiteSpace(country_of_origin))
+                                            {
+                                                Console.WriteLine("It's incorrect value of *country_of_origin*!");
+                                                continue;
+                                            }
+
+                                            authorController.author = new Author(id, full_name, country_of_origin);
+
+                                            await authorController.SelectOneRowAsync(id);
+                                            await authorController.UpdateDataAsync();
+                                            await authorController.SelectOneRowAsync(id);
+
+                                            Console.Write("Finish updating data? ");
+                                            if (Console.ReadLine()?.ToLower() == "y")
+                                                break;
+                                            Console.WriteLine();
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                        #endregion
+                        #region Delete data
+                        case 3:
+                            while (true)
+                            {
+                                item11 = ChooseTable();
+                                switch (item11)
+                                {
+                                    case 1: // TODO: Пофіксити видалення рядків пов'язаних з дочірньою таблицею!
+                                        while (true)
+                                        {
+                                            Console.Write("Insert row id for deleting: ");
+                                            strId = Console.ReadLine();
+                                            if (!int.TryParse(strId, out id))
+                                            {
+                                                Console.WriteLine("It's incorrect value of id");
+                                                continue;
+                                            }
+                                            else if (!await authorController.CheckPKValueAsync(id))
+                                            {
+                                                Console.WriteLine("Table don't have row with that id!");
+                                                continue;
+                                            }
+
+                                            await authorController.DeleteDataAsync(id);
+
+                                            Console.Write("Finish deleting data? ");
+                                            if (Console.ReadLine()?.ToLower() == "y")
+                                                break;
+                                            Console.WriteLine();
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                        #endregion 
+                        case 4:
+                            return;
+                        default:
+                            Console.WriteLine("There are no such menu item!");
+                            break;
+
+
+
+                        /*
+                        #region Insert data 
                                     case 2:
                                         while (true)
                                         {
@@ -488,49 +581,6 @@ try
                                 item11 = ChooseTable();
                                 switch (item11)
                                 {
-                                    case 1:
-                                        while (true)
-                                        {
-                                            Console.Write("Insert id of row for update: ");
-                                            strId = Console.ReadLine();
-                                            if (!int.TryParse(strId, out id))
-                                            {
-                                                Console.WriteLine("It's incorrect value of id!");
-                                                continue;
-                                            }
-                                            if (!await authorBookController.IsPKDublicated(id, "Author", "author_id"))
-                                            {
-                                                Console.WriteLine("Table don't have row with that id!");
-                                                continue;
-                                            }
-
-                                            Console.Write("Insert new *full_name*: ");
-                                            full_name = Console.ReadLine();
-                                            if (string.IsNullOrWhiteSpace(full_name))
-                                            {
-                                                Console.WriteLine("It's incorrect value of *full_name*!");
-                                                continue;
-                                            }
-
-                                            Console.Write("Insert new *country_of_origin*: ");
-                                            country_of_origin = Console.ReadLine();
-                                            if (string.IsNullOrWhiteSpace(country_of_origin))
-                                            {
-                                                Console.WriteLine("It's incorrect value of *country_of_origin*!");
-                                                continue;
-                                            }
-
-                                            authorController.author = new TableAuthor(id, full_name, country_of_origin);
-
-                                            if (authorController.author is not null)
-                                                await dbController.UpdateDataAsync("Author", "author_id", id, authorController);
-
-                                            Console.Write("Finish updating data? ");
-                                            if (Console.ReadLine()?.ToLower() == "y")
-                                                break;
-                                            Console.WriteLine();
-                                        }
-                                        break;
                                     case 2: 
                                         while (true)
                                         {
@@ -1061,274 +1111,7 @@ try
                             }
                             break;
                         #endregion
-                        case 4:
-                            return;
-                        default:
-                            Console.WriteLine("There are no such menu item!");
-                            break;
-                    }
-                }
-                break;
-            #region Create data
-            case 2:
-                while (true)
-                {
-                    int amountOfData;
-                    string? strAmountOfData;
-
-                    item11 = ChooseTable();
-                    switch (item11)
-                    {
-                        case 1:
-                            while (true)
-                            {
-                                Console.Write("Enter amount of generation data: ");
-                                strAmountOfData = Console.ReadLine();
-                                if (!int.TryParse(strAmountOfData, out amountOfData))
-                                {
-                                    Console.WriteLine("It's incorrect value!");
-                                    continue;
-                                }
-
-                                try
-                                {
-                                    await authorController.GenerateDataTableAsync(amountOfData);
-                                }
-                                catch (NpgsqlException sqlEx)
-                                {
-                                    Console.WriteLine(sqlEx.Message);
-                                }
-
-                                Console.Write("Finish create data? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 2:
-                            while (true)
-                            {
-                                Console.Write("Enter amount of generation data: ");
-                                strAmountOfData = Console.ReadLine();
-                                if (!int.TryParse(strAmountOfData, out amountOfData))
-                                {
-                                    Console.WriteLine("It's incorrect value!");
-                                    continue;
-                                }
-
-                                try
-                                {
-                                    await authorBookController.GenerateDataTableAsync(amountOfData);
-                                }
-                                catch (NpgsqlException sqlEx)
-                                {
-                                    Console.WriteLine(sqlEx.Message);
-                                }
-
-                                Console.Write("Finish create data? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 3:
-                            while (true)
-                            {
-                                Console.Write("Enter amount of generation data: ");
-                                strAmountOfData = Console.ReadLine();
-                                if (!int.TryParse(strAmountOfData, out amountOfData))
-                                {
-                                    Console.WriteLine("It's incorrect value!");
-                                    continue;
-                                }
-
-                                try
-                                {
-                                    await bookController.GenerateDataTableAsync(amountOfData);
-                                }
-                                catch (NpgsqlException sqlEx)
-                                {
-                                    Console.WriteLine(sqlEx.Message);
-                                }
-
-                                Console.Write("Finish create data? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 4:
-                            while (true)
-                            {
-                                Console.Write("Enter amount of generation data: ");
-                                strAmountOfData = Console.ReadLine();
-                                if (!int.TryParse(strAmountOfData, out amountOfData))
-                                {
-                                    Console.WriteLine("It's incorrect value!");
-                                    continue;
-                                }
-
-                                try
-                                {
-                                    await libraryController.GenerateDataTableAsync(amountOfData);
-                                }
-                                catch (NpgsqlException sqlEx)
-                                {
-                                    Console.WriteLine(sqlEx.Message);
-                                }
-
-                                Console.Write("Finish create data? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 5:
-                            while (true)
-                            {
-                                Console.Write("Enter amount of generation data: ");
-                                strAmountOfData = Console.ReadLine();
-                                if (!int.TryParse(strAmountOfData, out amountOfData))
-                                {
-                                    Console.WriteLine("It's incorrect value!");
-                                    continue;
-                                }
-
-                                try
-                                {
-                                    await personController.GenerateDataTableAsync(amountOfData);
-                                }
-                                catch (NpgsqlException sqlEx)
-                                {
-                                    Console.WriteLine(sqlEx.Message);
-                                }
-
-                                Console.Write("Finish create data? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 6:
-                            while (true)
-                            {
-                                Console.Write("Enter amount of generation data: ");
-                                strAmountOfData = Console.ReadLine();
-                                if (!int.TryParse(strAmountOfData, out amountOfData))
-                                {
-                                    Console.WriteLine("It's incorrect value!");
-                                    continue;
-                                }
-
-                                try
-                                {
-                                    await readerController.GenerateDataTableAsync(amountOfData);
-                                }
-                                catch (NpgsqlException sqlEx)
-                                {
-                                    Console.WriteLine(sqlEx.Message);
-                                }
-
-                                Console.Write("Finish create data? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 7:
-                            return;
-                        default:
-                            Console.WriteLine("There are no such menu item!");
-                            break;
-
-                    }
-                }
-                break;
-            #endregion
-            case 3:
-                while (true)
-                {
-                    Console.WriteLine("1. Query 1(select values - book_name, full_name)");
-                    Console.WriteLine("2. Query 2(select values - book_name, genre, giving_time)");
-                    Console.WriteLine("3. Query 3(select values - full_name, giving_time)");
-                    Console.WriteLine("4. Exit");
-                    Console.Write("Choose menu item: ");
-
-                    strItem = Console.ReadLine();
-                    if (!int.TryParse(strItem, out item) || string.IsNullOrWhiteSpace(strItem))
-                    {
-                        Console.WriteLine("It's invalid menu item!\n");
-                        continue;
-                    }
-
-                    switch (item)
-                    {
-                        case 1:
-                            while (true)
-                            {
-                                Console.Write("Enter *bk_library_id* for search: ");
-                                strBk_library_id = Console.ReadLine();
-                                if (!int.TryParse(strBk_library_id, out bk_library_id))
-                                {
-                                    Console.WriteLine("It's incorrect value of *bk_library_id*!");
-                                    continue;
-                                }
-
-                                Console.Write("Enter the identifier to search for *book_name*: ");
-                                bookNameLike = Console.ReadLine();
-
-                                await dbController.SearchAsync(bk_library_id, bookNameLike);
-
-                                Console.Write("Stop searching? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 2:
-                            while (true)
-                            {
-                                Console.Write("Enter the identifier to search for *book_name*: ");
-                                bookNameLike = Console.ReadLine();
-
-                                Console.Write("Enter the identifier to search for *genre*: ");
-                                genreLike = Console.ReadLine();
-
-                                await dbController.SearchAsync(bookNameLike, genreLike);
-
-                                Console.Write("Stop searching? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 3:
-                            while (true)
-                            {
-                                Console.Write("Enter the identifier to search for *full_name*: ");
-                                fullNameLike = Console.ReadLine();
-
-                                Console.Write("Enter *is_have_ticket* for search: ");
-                                strIs_have_ticket = Console.ReadLine();
-                                if (!bool.TryParse(strIs_have_ticket, out is_have_ticket))
-                                {
-                                    Console.WriteLine("It's incorrect value of *is_have_ticket*!");
-                                    continue;
-                                }
-
-                                await dbController.SearchAsync(fullNameLike, is_have_ticket);
-
-                                Console.Write("Stop searching? ");
-                                if (Console.ReadLine()?.ToLower() == "y")
-                                    break;
-                                Console.WriteLine();
-                            }
-                            break;
-                        case 4:
-                            return;
-                        default:
-                            Console.WriteLine("There are no such menu item!");
-                            break;
+                        */
                     }
                 }
                 break;

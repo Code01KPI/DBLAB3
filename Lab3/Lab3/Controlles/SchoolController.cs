@@ -1,33 +1,45 @@
-﻿using Npgsql;
-using DBLab2.Models;
-using System.Diagnostics;
-
-namespace DBLab2.Controllers
+﻿
+namespace Lab3
 {
     /// <summary>
     /// Логіка об'єкта БД.
     /// </summary>
-    internal class DataBaseController
+    internal class SchoolController
     {
-        public DataBase dataBase;
+        protected SchoolContext schoolContext;
 
-        public TableAuthor? author { get; set; }
+        public SchoolController() { }
 
-        public TableAuthorBook? authorBook { get; set; }
+        /// <summary>
+        /// Вставка даних в таблицю.
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task InsertDataAsync() { }
 
-        public TableBook? book { get; set; }
+        /// <summary>
+        /// Редагування даних.
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task UpdateDataAsync() { }
 
-        public TableLibrary? library { get; set; }
+        /// <summary>
+        /// Видалення даних.
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task DeleteDataAsync(int id) { }
 
-        public TableReader? reader { get; set; }
-
-        public TablePerson? person { get; set; }
-
+        /// <summary>
+        /// Вивід одного рядка умовної таблиці на консоль.
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task SelectOneRowAsync(int id) { }
+        
+        /*
         public DataBaseController()
         {
             try
             {
-                dataBase = new DataBase("Host=localhost;Port=5432;Username=postgres;Password=1mn2487rt;Database=School;");
+                dataBase = new DataBaseContext("Host=localhost;Port=5432;Username=postgres;Password=1mn2487rt;Database=School;");
 
             }
             catch (ArgumentException argEx)
@@ -330,6 +342,6 @@ namespace DBLab2.Controllers
             return maxId;
         }
 
-
+        */
     }
 }
