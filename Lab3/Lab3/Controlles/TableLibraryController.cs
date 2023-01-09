@@ -1,65 +1,81 @@
-﻿/*using DBLab2.Models;
-
-namespace DBLab2.Controllers
+﻿
+namespace Lab3
 {
-
-    internal class TableLibraryController : DataBaseController
+    /// <summary>
+    /// Логіка таблиці AuthorBook
+    /// </summary>
+    class LibraryController : SchoolController
     {
-        public List<TableLibrary> libraryList = new List<TableLibrary>();
+        public Library? library { get; set; }
 
-        public TableLibraryController() { }
-
-        public override async Task InsertDataTableAsync()
+        public override async Task InsertDataAsync()
         {
-            foreach (var lib in libraryList)
+            if (library is not null)
             {
-                await using var command = dataBase.DataSource.CreateCommand($"INSERT INTO public.\"Library\"(id, giving_time, return_time, actual_return_time)" +
-                    $" VALUES({lib.id}, :giving_time, :return_time, :actual_return_time)");
-                command.Parameters.AddWithValue(":giving_time", lib.giving_time);
-                command.Parameters.AddWithValue(":return_time", lib.return_time);
-                command.Parameters.AddWithValue(":actual_return_time", lib.actual_return_time);
-                var execute = await command.ExecuteNonQueryAsync();
+                using (schoolContext = new SchoolContext())
+                {
+                    await schoolContext.AddAsync(library);
+                    await schoolContext.SaveChangesAsync();
+                }
+            }
+            else
+                throw new ArgumentException("AuthorBook object is not set!", nameof(library));
+        }
+
+        public override async Task UpdateDataAsync()
+        {
+            if (library is not null)
+            {
+                using (schoolContext = new SchoolContext())
+                {
+                    schoolContext.Libraries.Update(library);
+                    await schoolContext.SaveChangesAsync();
+                }
+            }
+            else
+                throw new ArgumentException("Author object is not set!", nameof(library));
+        }
+
+        public override async Task DeleteDataAsync(int id)
+        {
+
+            using (schoolContext = new SchoolContext())
+            {
+                var bList = schoolContext.Books.ToList().Where(b => b.BkLibraryId == id);
+                schoolContext.Books.RemoveRange(bList);
+                await schoolContext.SaveChangesAsync();
+
+                var rList = schoolContext.Readers.ToList().Where(r => r.LibraryId == id);
+                schoolContext.Readers.RemoveRange(rList);
+                await schoolContext.SaveChangesAsync();
+
+                schoolContext.Libraries.Remove(schoolContext.Libraries.First(l => l.Id == id));
+                await schoolContext.SaveChangesAsync();
             }
         }
 
-        
-        public override async Task UpdateDataTableAsync(int id)
+        public async Task<bool> CheckPKValueAsync(int id)
         {
-            await using var command = dataBase.DataSource.CreateCommand($"UPDATE public.\"Library\" SET id = {library?.id}, " +
-                $"giving_time = :giving_time, return_time = :return_time, actual_return_time = :actual_return_time" +
-                $" WHERE id = {id}");
-            command.Parameters.AddWithValue(":giving_time", library?.giving_time);
-            command.Parameters.AddWithValue(":return_time", library?.return_time);
-            command.Parameters.AddWithValue(":actual_return_time", library?.actual_return_time);
-            var execute = await command.ExecuteNonQueryAsync();
+            Library? lib = null;
+            using (schoolContext = new SchoolContext())
+            {
+                lib = schoolContext.Libraries.FirstOrDefault(l => l.Id == id);
+            }
+            return lib == null ? false : true;
         }
 
-        
-        public override async Task DeleteDataTableAsync(int id)
+        public override async Task SelectOneRowAsync(int id)
         {
-            await using var command1 = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Author_Book\" WHERE book_fk = {id}");
-            var execute1 = await command1.ExecuteNonQueryAsync();
+            Library? l;
+            using (schoolContext = new SchoolContext())
+            {
+                l = schoolContext.Libraries.FirstOrDefault(l => l.Id == id);
+            }
 
-            await using var command2 = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Book\" WHERE bk_library_id = {id}");
-            var execute2 = await command2.ExecuteNonQueryAsync();
-
-            await using var command3 = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Reader\" WHERE library_id = {id}");
-            var execute3 = await command3.ExecuteNonQueryAsync();
-
-            await using var command4 = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Library\" WHERE id = {id}");
-            var execute4 = await command4.ExecuteNonQueryAsync();
-        }
-
-        public override async Task GenerateDataTableAsync(int amountOfData)
-        {
-            int newFirstId = FindMaxPKAsync("Library", "id").Result + 1;
-            await PrintCountOfRowAsync("Library");
-            await using var command = dataBase.DataSource.CreateCommand($"INSERT INTO public.\"Library\"(id, giving_time, return_time, actual_return_time) " +
-                $"SELECT generate_series({newFirstId},{amountOfData + newFirstId - 1}), timestamp '2020-01-01 00:00:00' + random() * (timestamp '2021-01-01 00:00:00' - timestamp '2020-01-02 00:00:00')," +
-                $"timestamp '2022-01-01 00:00:00' + random() * (timestamp '2023-01-01 00:00:00' - timestamp '2022-01-02 00:00:00'), timestamp '2021-01-01 00:00:00' + random() * (timestamp '2022-01-01 00:00:00' - timestamp '2021-01-02 00:00:00')");
-            var execute = await command.ExecuteNonQueryAsync();
-            await PrintCountOfRowAsync("Library");
+            if (l is not null)
+                Console.WriteLine($"{l.Id} - {l.GivingTime} - {l.ReturnTime} - {l.ActualReturnTime}");
+            else
+                throw new ArgumentException("Invalid Id in parameters!", nameof(id));
         }
     }
 }
-*/

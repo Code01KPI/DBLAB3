@@ -11,5 +11,14 @@ public partial class Person
 
     public bool IsHaveTicket { get; set; }
 
+    public Person() { }
+
+    public Person(int id, string fullName, bool isHaveTicket)
+    {
+        PersonId = id;
+        FullName = fullName;
+        IsHaveTicket = isHaveTicket;
+    }
+
     public virtual ICollection<Reader> Readers { get; } = new List<Reader>();
 }

@@ -13,6 +13,16 @@ public partial class Library
 
     public DateOnly ActualReturnTime { get; set; }
 
+    public Library () { }
+
+    public Library (int id, DateOnly givingTime, DateOnly returnTime, DateOnly actualReturnTime)
+    {
+        Id = id;
+        GivingTime = givingTime;
+        ReturnTime = returnTime;
+        ActualReturnTime = actualReturnTime;
+    }
+
     public virtual ICollection<Book> Books { get; } = new List<Book>();
 
     public virtual ICollection<Reader> Readers { get; } = new List<Reader>();

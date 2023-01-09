@@ -64,12 +64,12 @@ namespace Lab3
                 throw new ArgumentException("Invalid Id in parameters!", nameof(id));
         }
 
-        public async Task<bool> CheckPKValueAsync(int PK)
+        public async Task<bool> CheckPKValueAsync(int id)
         {
             Author? author = null;
             using (schoolContext = new SchoolContext())
             {
-                author = schoolContext.Authors.First<Author>(a => a.AuthorId == PK);
+                author = schoolContext.Authors.FirstOrDefault(a => a.AuthorId == id);
             }
             return author == null ? false : true;
         }

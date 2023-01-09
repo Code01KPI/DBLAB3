@@ -1,50 +1,73 @@
-﻿using Lab3;
-
-
-/*
-namespace DBLab2.Controllers
+﻿
+namespace Lab3
 {
-    internal class TableAuthorBookController : DataBaseController
+    /// <summary>
+    /// Логіка таблиці AuthorBook
+    /// </summary>
+    class AuthorBookController : SchoolController
     {
-        public List<TableAuthorBook> authorBookList = new List<TableAuthorBook>();
+        public AuthorBook? authorBook { get; set; }
 
-        public TableAuthorBookController() { }
-
-        public override async Task InsertDataTableAsync()
+        public override async Task InsertDataAsync()
         {
-            foreach (var authorBook in authorBookList)
+            if (authorBook is not null)
             {
-                await using var command = dataBase.DataSource?.CreateCommand($"INSERT INTO public.\"Author_Book\"(author_book_id, book_fk, author_fk) VALUES({authorBook.author_book_id}, '{authorBook.book_fk}', '{authorBook.author_fk}')");
-                var execute = await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        public override async Task UpdateDataTableAsync(int id) 
-        {
-            await using var command = dataBase.DataSource.CreateCommand($"UPDATE public.\"Author_Book\" SET author_book_id = {authorBook?.author_book_id}, book_fk = {authorBook?.book_fk}, author_fk = {authorBook.author_fk} WHERE author_book_id = {id}");
-            var execute = await command.ExecuteNonQueryAsync();
-        }
-
-        public override async Task DeleteDataTableAsync(int id)
-        {
-            await using var command = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Author_Book\" WHERE author_book_id = {id}");
-            var execute = await command.ExecuteNonQueryAsync();
-        }
-
-        public override async Task GenerateDataTableAsync(int amountOfData)
-        {
-            if (GetCountOfRow("Author").Result > 0 && GetCountOfRow("Book").Result > 0)
-            {
-                int newFirstId = FindMaxPKAsync("Author_Book", "author_book_id").Result + 1;
-                await PrintCountOfRowAsync("Author_Book");
-                await using var command = dataBase.DataSource.CreateCommand($"INSERT INTO public.\"Author_Book\"(author_book_id, book_fk, author_fk) " +
-                    $"SELECT generate_series({newFirstId},{amountOfData + newFirstId - 1}), book_id, author_id FROM public.\"Book\", public.\"Author\", generate_series({newFirstId},{amountOfData + newFirstId - 1}) limit {amountOfData}");
-                var execute = await command.ExecuteNonQueryAsync();
-                await PrintCountOfRowAsync("Author_Book");
+                using (schoolContext = new SchoolContext())
+                {
+                    await schoolContext.AddAsync(authorBook);
+                    await schoolContext.SaveChangesAsync();
+                }
             }
             else
-                throw new NpgsqlException("Parents tables are empty!");
+                throw new ArgumentException("AuthorBook object is not set!", nameof(authorBook));
+        }
+
+        public override async Task UpdateDataAsync()
+        {
+            if (authorBook is not null)
+            {
+                using (schoolContext = new SchoolContext())
+                {
+                    schoolContext.AuthorBooks.Update(authorBook);
+                    await schoolContext.SaveChangesAsync();
+                }
             }
+            else
+                throw new ArgumentException("Author object is not set!", nameof(authorBook));
+        }
+
+        public override async Task DeleteDataAsync(int id)
+        {
+            using (schoolContext = new SchoolContext())
+            {
+                schoolContext.AuthorBooks.Remove(schoolContext.AuthorBooks.First(ab => ab.AuthorBookId == id));
+                await schoolContext.SaveChangesAsync();
+            }
+        }
+
+
+        public async Task<bool> CheckPKValueAsync(int id)
+        {
+            AuthorBook? authorBook = null;
+            using (schoolContext = new SchoolContext())
+            {
+                authorBook = schoolContext.AuthorBooks.FirstOrDefault(a => a.AuthorBookId == id);
+            }
+            return authorBook == null ? false : true;
+        }
+
+        public override async Task SelectOneRowAsync(int id)
+        {
+            AuthorBook? aB;
+            using (schoolContext = new SchoolContext())
+            {
+                aB = schoolContext.AuthorBooks.FirstOrDefault(ab => ab.AuthorBookId == id);
+            }
+
+            if (aB is not null)
+                Console.WriteLine($"{aB.AuthorBookId} - {aB.BookFk} - {aB.AuthorFk}");
+            else
+                throw new ArgumentException("Invalid Id in parameters!", nameof(id));
+        }
     }
 }
-*/

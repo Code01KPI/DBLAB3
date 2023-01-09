@@ -13,6 +13,16 @@ public partial class Reader
 
     public string TakenBook { get; set; } = null!;
 
+    public Reader() { }
+
+    public Reader(int id, int libId, int perId, string takenBook)
+    {
+        Id = id;
+        LibraryId = libId;
+        PersonId = perId;
+        TakenBook = takenBook;
+    }
+
     public virtual Library Library { get; set; } = null!;
 
     public virtual Person Person { get; set; } = null!;

@@ -1,52 +1,73 @@
-﻿/*using DBLab2.Models;
-using Npgsql;
-
-namespace DBLab2.Controllers
+﻿
+namespace Lab3
 {
-    internal class TableReaderController : DataBaseController
+    /// <summary>
+    /// Логіка таблиці AuthorBook
+    /// </summary>
+    class ReaderController : SchoolController
     {
-        public List<TableReader> readerList = new List<TableReader>();
+        public Reader? reader { get; set; }
 
-        public TableReaderController() { }
-
-        public override async Task InsertDataTableAsync()
+        public override async Task InsertDataAsync()
         {
-            foreach (var reader in readerList)
+            if (reader is not null)
             {
-                await using var command = dataBase.DataSource?.CreateCommand($"INSERT INTO public.\"Reader\"(id, library_id, person_id, taken_book) VALUES({reader.id}, {reader.library_id}, {reader.person_id}, '{reader.taken_book}')");
-                var execute = await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        
-        public override async Task UpdateDataTableAsync(int id)
-        {
-            await using var command = dataBase.DataSource.CreateCommand($"UPDATE public.\"Reader\" SET id = {reader?.id}, library_id = {reader?.library_id}, person_id = {reader?.person_id}, taken_book = '{reader?.taken_book}' WHERE id = {id}");
-            var execute = await command.ExecuteNonQueryAsync();
-        }
-        
-        public override async Task DeleteDataTableAsync(int id)
-        {
-            await using var command = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Reader\" WHERE id = {id}");
-            var execute = await command.ExecuteNonQueryAsync();
-        }
-
-        public override async Task GenerateDataTableAsync(int amountOfData)
-        {
-            if (GetCountOfRow("Library").Result > 0 || GetCountOfRow("Person").Result > 0)
-            {
-                int newFirstId = FindMaxPKAsync("Reader", "id").Result + 1;
-                await PrintCountOfRowAsync("Reader");
-                await using var command = dataBase.DataSource.CreateCommand($"INSERT INTO public.\"Reader\"(id, taken_book, library_id, person_id) " +
-                    $"SELECT generate_series({newFirstId},{amountOfData + newFirstId - 1}), md5(random()::text), id, person_id FROM public.\"Library\", public.\"Person\" limit {amountOfData}");
-                var execute = await command.ExecuteNonQueryAsync();
-                await PrintCountOfRowAsync("Reader");
+                using (schoolContext = new SchoolContext())
+                {
+                    await schoolContext.AddAsync(reader);
+                    await schoolContext.SaveChangesAsync();
+                }
             }
             else
-                throw new NpgsqlException("Parents tables are empty!");
+                throw new ArgumentException("Reader object is not set!", nameof(reader));
+        }
+
+        public override async Task UpdateDataAsync()
+        {
+            if (reader is not null)
+            {
+                using (schoolContext = new SchoolContext())
+                {
+                    schoolContext.Readers.Update(reader);
+                    await schoolContext.SaveChangesAsync();
+                }
+            }
+            else
+                throw new ArgumentException("Author object is not set!", nameof(reader));
+        }
+
+        public override async Task DeleteDataAsync(int id)
+        {
+            using (schoolContext = new SchoolContext())
+            {
+                schoolContext.Readers.Remove(schoolContext.Readers.First(r => r.Id == id));
+                await schoolContext.SaveChangesAsync();
+            }
+        }
+
+
+        public async Task<bool> CheckPKValueAsync(int id)
+        {
+            Reader? reader = null;
+            using (schoolContext = new SchoolContext())
+            {
+                reader = schoolContext.Readers.FirstOrDefault(r => r.Id == id);
+            }
+            return reader == null ? false : true;
+        }
+
+        public override async Task SelectOneRowAsync(int id)
+        {
+            Reader? r;
+            using (schoolContext = new SchoolContext())
+            {
+                r = schoolContext.Readers.FirstOrDefault(r => r.Id == id);
+            }
+
+            if (r is not null)
+                Console.WriteLine($"{r.Id} - {r.LibraryId} - {r.PersonId} - {r.TakenBook}");
+            else
+                throw new ArgumentException("Invalid Id in parameters!", nameof(id));
         }
     }
-
-
 }
-*/

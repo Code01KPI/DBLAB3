@@ -1,55 +1,79 @@
-﻿/*using DBLab2.Models;
-using Npgsql;
-
-namespace DBLab2.Controllers
+﻿
+namespace Lab3
 {
-    internal class TableBookController : DataBaseController
+    /// <summary>
+    /// Логіка таблиці AuthorBook
+    /// </summary>
+    class BookController : SchoolController
     {
-        public List<TableBook> bookList = new List<TableBook>();
+        public Book? book { get; set; }
 
-        public TableBookController() { }
-
-        public override async Task InsertDataTableAsync()
+        public override async Task InsertDataAsync()
         {
-            foreach (var book in bookList)
+            if (book is not null)
             {
-                await using var command = dataBase.DataSource.CreateCommand($"INSERT INTO public.\"Book\"(book_id, date_of_publication, number_of_pages, genre, bk_library_id, book_name)" +
-                    $" VALUES({book.book_id}, {book.date_of_publication}, {book.number_of_pages}, '{book.genre}', {book.bk_library_id}, '{book.book_name}')");
-                var execute = await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        public override async Task UpdateDataTableAsync(int id)
-        {
-            await using var command = dataBase.DataSource.CreateCommand($"UPDATE public.\"Book\" SET book_id = {book?.book_id}, " +
-                $"date_of_publication = {book?.date_of_publication}, number_of_pages = {book?.number_of_pages}, genre = '{book?.genre}', bk_library_id = {book?.bk_library_id}, book_name = '{book?.book_name}'" +
-                $" WHERE book_id = {id}");
-            var execute = await command.ExecuteNonQueryAsync();
-        }
-
-        
-        public override async Task DeleteDataTableAsync(int id)
-        {
-            await using var command1 = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Author_Book\" WHERE book_fk = {id}");
-            var execute1 = await command1.ExecuteNonQueryAsync();
-
-            await using var command2 = dataBase.DataSource.CreateCommand($"DELETE FROM public.\"Book\" WHERE book_id = {id}");
-            var execute2 = await command2.ExecuteNonQueryAsync();
-        }
-
-        public override async Task GenerateDataTableAsync(int amountOfData)
-        {
-            if (GetCountOfRow("Library").Result > 0)
-            {
-                int newFirstId = FindMaxPKAsync("Book", "Book_id").Result + 1;
-                await PrintCountOfRowAsync("Book");
-                await using var command = dataBase.DataSource.CreateCommand($"INSERT INTO public.\"Book\"(book_id, genre, book_name, date_of_publication, number_of_pages, bk_library_id) SELECT generate_series({newFirstId},{amountOfData + newFirstId - 1}), md5(random()::text), md5(random()::text), trunc(random() * 2023)::int, trunc(random() * 200)::int, id FROM generate_series(1, {amountOfData}), public.\"Library\" limit {amountOfData}");
-                var execute = await command.ExecuteNonQueryAsync();
-                await PrintCountOfRowAsync("Book");
+                using (schoolContext = new SchoolContext())
+                {
+                    await schoolContext.AddAsync(book);
+                    await schoolContext.SaveChangesAsync();
+                }
             }
             else
-                throw new NpgsqlException("Parent table is empty!");
+                throw new ArgumentException("AuthorBook object is not set!", nameof(book));
+        }
+
+        public override async Task UpdateDataAsync()
+        {
+            if (book is not null)
+            {
+                using (schoolContext = new SchoolContext())
+                {
+                    schoolContext.Books.Update(book);
+                    await schoolContext.SaveChangesAsync();
+                }
+            }
+            else
+                throw new ArgumentException("Author object is not set!", nameof(book));
+        }
+
+                public override async Task DeleteDataAsync(int id)
+        {
+
+            using (schoolContext = new SchoolContext())
+            {
+                var aBList = schoolContext.AuthorBooks.ToList().Where(ab => ab.BookFk == id);
+                schoolContext.AuthorBooks.RemoveRange(aBList);
+                await schoolContext.SaveChangesAsync();
+
+                schoolContext.Books.Remove(schoolContext.Books.First(a => a.BookId == id));
+                await schoolContext.SaveChangesAsync();
+            }
+        }
+
+
+        public async Task<bool> CheckPKValueAsync(int id)
+        {
+            Book? book = null;
+            using (schoolContext = new SchoolContext())
+            {
+                book = schoolContext.Books.FirstOrDefault(a => a.BookId == id);
+            }
+            return book == null ? false : true;
+        }
+
+        public override async Task SelectOneRowAsync(int id)
+        {
+            Book? b;
+            using (schoolContext = new SchoolContext())
+            {
+                b = schoolContext.Books.FirstOrDefault(b => b.BookId == id);
+            }
+
+            if (b is not null)
+                Console.WriteLine($"{b.BookId} - {b.DateOfPublication} - {b.NumberOfPages} - " +
+                    $"{b.Genre} - {b.BkLibraryId} - {b.BookName}");
+            else
+                throw new ArgumentException("Invalid Id in parameters!", nameof(id));
         }
     }
 }
-*/
