@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "GPfWh4QQi6P07Y5uThbJzTXKTg+UGLehXlCi0lcyQrkB4IpqEfbNyjGgH/TQ6Ki8yRPjXiNzPcDSQGsZeV3hjQ==",
+  "success": true,
+  "projectFilePath": "D:\\KPI\\Паль3курс\\1семестр\\БД і управління\\Lab3\\Lab3\\Lab3\\Lab3.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\uahun\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.0\\microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\uahun\\.nuget\\packages\\npgsql\\7.0.1\\npgsql.7.0.1.nupkg.sha512",
+    "C:\\Users\\uahun\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
