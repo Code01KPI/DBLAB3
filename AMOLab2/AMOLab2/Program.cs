@@ -2,6 +2,7 @@
 using AMOLab2;
 
 Methods methods = new Methods();
+methods.Method4();
 
 Stopwatch stopwatch;
 int item;
@@ -9,7 +10,7 @@ string? strItem;
 
 while (true)
 {
-    Console.WriteLine("1. Method 4 - QR factorization");
+    Console.WriteLine("\n1. Method 4 - QR factorization");
     Console.WriteLine("Choose menu item: "); 
     strItem = Console.ReadLine();
     if (strItem is null || !int.TryParse(strItem, out item))
