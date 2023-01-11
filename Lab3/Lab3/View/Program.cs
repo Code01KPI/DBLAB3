@@ -54,8 +54,6 @@ try
             case 1:
                 while (true)
                 {
-
-
                     Console.WriteLine("\n1. Insert data");
                     Console.WriteLine("2. Update data");
                     Console.WriteLine("3. Delete data");

@@ -1,0 +1,15 @@
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\bin\Debug\net6.0\AMOLab2.exe
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\bin\Debug\net6.0\AMOLab2.deps.json
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\bin\Debug\net6.0\AMOLab2.runtimeconfig.json
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\bin\Debug\net6.0\AMOLab2.dll
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\bin\Debug\net6.0\ref\AMOLab2.dll
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\bin\Debug\net6.0\AMOLab2.pdb
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.csproj.AssemblyReference.cache
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.GeneratedMSBuildEditorConfig.editorconfig
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.AssemblyInfoInputs.cache
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.AssemblyInfo.cs
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.csproj.CoreCompileInputs.cache
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.dll
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\ref\AMOLab2.dll
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.pdb
+D:\KPI\Паль3курс\1семестр\БД і управління\Lab3\AMOLab2\AMOLab2\obj\Debug\net6.0\AMOLab2.genruntimeconfig.cache
